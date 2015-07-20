@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Guidance to run deep learning for RBP binding site prediction
 
 1. The original CLIP-seq data can be downloaded from http://www.bioinf.uni-freiburg.de/Software/GraphProt/.
@@ -6,4 +7,7 @@ Guidance to run deep learning for RBP binding site prediction
 
 3. Programs and materials to predict RNA 3D structure using JAR3D can be downloaded from http://rna.bgsu.edu/data/jar3d/models/.
 
-4. Programs of the deep learning framework to predict RBP binding sites are provided in the folder /deepnet-master/deepnet/examples/multimodal_dbn_RNAbP/.
+4. Programs of the deep learning framework to predict RBP binding sites are provided in the folder deepnet-master/deepnet/examples/multimodal_dbn_RNAbP/.
+=======
+# deepnet-rbp
+>>>>>>> origin/master
