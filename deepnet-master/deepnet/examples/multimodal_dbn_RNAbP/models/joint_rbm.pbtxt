@@ -1,0 +1,137 @@
+name: "joint_rbm"
+model_type: DBM
+hyperparams {
+  base_epsilon: 0.01
+  epsilon_decay : INVERSE_T
+  epsilon_decay_half_life : 10000
+  initial_momentum : 0.5
+  final_momentum : 0.9
+  momentum_change_steps : 5000
+  sparsity : false
+  sparsity_target : 0.5
+  sparsity_cost : 0.01
+  sparsity_damping : 0.9
+  apply_l2_decay: true
+  l2_decay: 0.0001
+  activation: LOGISTIC
+  mf_steps: 1
+  gibbs_steps: 1
+}
+
+layer {
+  name: "RNA1seq_hidden1"
+  dimensions: 2000
+  is_input: true
+  param {
+    name: "bias"
+    initialization: CONSTANT
+  }
+  loss_function: SQUARED_LOSS
+  data_field {
+    train: "RNA1seq_hidden1_train"
+    validation: “RNA1seq_hidden1_validation”
+    test: "RNA1seq_hidden1_test"
+  }
+  performance_stats {
+    compute_error: true
+  }
+  hyperparams {
+    sparsity : false
+    apply_l2_decay: false
+  }
+}
+
+layer {
+  name: "RNA2seq_hidden1"
+  dimensions: 1000
+  is_input: true
+  param {
+    name: "bias"
+    initialization: CONSTANT
+  }
+  loss_function: SQUARED_LOSS
+  data_field {
+    train: "RNA2seq_hidden1_train"
+    validation: “RNA1seq_hidden1_validation”
+    test: "RNA2seq_hidden1_test"
+  }
+  performance_stats {
+    compute_error: true
+  }
+  hyperparams {
+    sparsity : false
+    apply_l2_decay: false
+  }
+}
+
+layer {
+  name: "RNA3seq_input_layer"
+  dimensions: 529
+  is_input: true
+  param {
+    name: "bias"
+    initialization: CONSTANT
+  }
+  loss_function: SQUARED_LOSS
+  data_field {
+    train: "RNA3seq_train”
+    validation: “RNA3seq_val”
+    test: "RNA3seq_test"
+  }
+  performance_stats {
+   compute_error: true
+  }
+  hyperparams {
+    sparsity : false
+    apply_l2_decay: false
+  }
+}
+
+layer {
+  name: "joint_hidden1"
+  dimensions: 3000
+  param {
+    name: "bias"
+    initialization: CONSTANT
+  }
+  performance_stats {
+    compute_sparsity: true
+  }
+  hyperparams {
+    enable_display: false
+    apply_l2_decay: false
+  }
+}
+
+edge {
+  node1: "RNA1seq_hidden1"
+  node2: "joint_hidden1"
+  directed: false
+  param {
+    name: "weight"
+    initialization: DENSE_GAUSSIAN_SQRT_FAN_IN
+    sigma : 0.01
+  }
+}
+
+edge {
+  node1: "RNA2seq_hidden1"
+  node2: "joint_hidden1"
+  directed: false
+  param {
+    name: "weight"
+    initialization: DENSE_GAUSSIAN_SQRT_FAN_IN
+    sigma : 0.01
+  }
+}
+
+edge {
+  node1: "RNA3seq_input_layer"
+  node2: "joint_hidden1"
+  directed: false
+  param {
+    name: "weight"
+    initialization: DENSE_GAUSSIAN_SQRT_FAN_IN
+    sigma : 0.01
+  }
+}

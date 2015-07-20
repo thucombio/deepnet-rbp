@@ -1,0 +1,14 @@
+optimizer: CD
+stopcondition {
+  all_processed: false
+  steps: 100000
+}
+train: true
+batchsize: 10
+data_proto: "joint_rbm_LAST/data.pbtxt"
+eval_after: 5000
+checkpoint_after: 50000
+checkpoint_directory: "/home/bioinformatics/Documents/data/RNAbP/cv0/dbn_models"
+randomize: true
+show_after: 1000
+data_proto_prefix: "/home/bioinformatics/Documents/data/RNAbP/cv0/dbn_reps"

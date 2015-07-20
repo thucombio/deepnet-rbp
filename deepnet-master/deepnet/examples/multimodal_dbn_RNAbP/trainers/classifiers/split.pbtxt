@@ -1,0 +1,15 @@
+optimizer: GRADIENT_DESCENT
+stopcondition {
+  all_processed: false
+  steps: 100000
+}
+train: true
+batchsize: 10
+data_proto: "split_1/data.pbtxt"
+eval_after: 500
+checkpoint_after: 10000
+checkpoint_directory: "classifiers/split_1"
+randomize: true
+get_last_piece: false
+data_proto_prefix: "/home/szhang/Documents/data/RNAbP/cv0/dbn_reps"
+checkpoint_prefix: "/home/szhang/Documents/data/RNAbP/cv0/dbn_models"

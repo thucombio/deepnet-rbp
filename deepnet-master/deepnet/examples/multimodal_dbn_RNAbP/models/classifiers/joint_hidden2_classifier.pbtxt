@@ -1,0 +1,63 @@
+name: "joint_hidden2_classifier"
+model_type: FEED_FORWARD_NET
+hyperparams {
+  base_epsilon: 0.01
+  epsilon_decay: INVERSE_T
+  epsilon_decay_half_life: 10000
+  initial_momentum: 0.5
+  final_momentum: 0.9
+  momentum_change_steps: 5000
+  apply_l2_decay:  false
+  l2_decay: 0.001
+  select_model_using_map: true
+}
+
+layer {
+  name: "joint_hidden2"
+  dimensions: 3000 
+  is_input: true
+  param {
+    name: "bias"
+    initialization: CONSTANT
+  }
+  data_field {
+    train: "joint_hidden2_train"
+    validation: "joint_hidden2_validation”
+    test: "joint_hidden2_test"
+  }
+}
+
+layer {
+  name: "output_layer"
+  dimensions: 2
+  param {
+    name: "bias"
+    initialization: CONSTANT
+  }
+  hyperparams{
+    activation: LOGISTIC
+    apply_l2_decay: true
+  }
+  is_output: true
+  loss_function: CROSS_ENTROPY
+  data_field {
+    train: "train_labels"
+    validation: “val_labels"
+    test: "test_labels"
+  }
+  performance_stats {
+    compute_cross_entropy: true
+    compute_MAP: true
+    compute_prec50: true
+  }
+}
+
+edge {
+  node1: "joint_hidden2"
+  node2: "output_layer"
+  param {
+    name: "weight"
+    initialization: DENSE_GAUSSIAN_SQRT_FAN_IN
+    sigma: 0.01
+  }
+}

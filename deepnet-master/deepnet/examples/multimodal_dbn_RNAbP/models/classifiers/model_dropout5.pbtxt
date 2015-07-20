@@ -1,0 +1,176 @@
+name: "ff_classifier"
+model_type: FEED_FORWARD_NET
+
+layer {
+  name: "RNA1seq_hidden1"
+  dimensions: 2000
+  is_input: true
+  param {
+    name: "bias"
+    initialization: CONSTANT
+  }
+    hyperparams {
+    dropout_prob: 0.2
+    activation: LOGISTIC
+  }
+  data_field {
+    train: "RNA1seq_hidden1_train”
+    validation: "RNA1seq_hidden1_validation”
+    test: "RNA1seq_hidden1_test"
+  }
+}
+
+layer {
+  name: "RNA2seq_hidden1"
+  dimensions: 1000
+  is_input: true
+  param {
+    name: "bias"
+    initialization: CONSTANT
+  }
+    hyperparams {
+    dropout_prob: 0.2
+    activation: LOGISTIC
+  }
+  data_field {
+    train: "RNA2seq_hidden1_train”
+    validation: "RNA2seq_hidden1_validation”
+    test: "RNA2seq_hidden1_test"
+  }
+}
+
+layer {
+  name: "RNA3seq_input_layer"
+  dimensions: 529
+  is_input: true
+  param {
+    name: "bias"
+    initialization: CONSTANT
+  }
+  hyperparams {
+    dropout_prob: 0.2
+    activation: LOGISTIC
+  }
+  data_field {
+    train: "RNA3seq_train"
+    validation: "RNA3seq_val”
+    test: "RNA3seq_test"
+  }
+}
+
+layer {
+  name: "joint_hidden1"
+  dimensions: 3000
+  param {
+    name: "bias"
+    initialization: PRETRAINED
+    pretrained_model: "/home/bioinformatics/Documents/data/RNAbP/cv5/dbn_models/joint_rbm_LAST"
+  }
+}
+
+layer {
+  name: "joint_hidden2"
+  dimensions: 3000
+  param {
+    name: "bias"
+    initialization: PRETRAINED
+    pretrained_model: "/home/bioinformatics/Documents/data/RNAbP/cv5/dbn_models/joint_rbm2_LAST"
+  }
+}
+
+layer {
+  name: "output_layer"
+  dimensions: 2
+  param {
+    name: "bias"
+    initialization: CONSTANT
+  }
+  is_output: true
+  loss_function: CROSS_ENTROPY
+  hyperparams {
+    sparsity: false
+    dropout: false
+    apply_l2_decay: false
+    activation: LOGISTIC
+    enable_display: false
+  }
+  data_field {
+    train: "train_labels"
+    validation: “val_labels"
+    test: "test_labels"
+  }
+  performance_stats {
+    compute_correct_preds: false
+    compute_cross_entropy: true
+    compute_MAP: true
+    compute_prec50: true
+  }
+}
+
+edge {
+  node1: "RNA1seq_hidden1"
+  node2: "joint_hidden1"
+  param {
+    name: "weight"
+    initialization: PRETRAINED
+    pretrained_model: "/home/bioinformatics/Documents/data/RNAbP/cv5/dbn_models/joint_rbm_LAST"
+  }
+}
+
+edge {
+  node1: "RNA2seq_hidden1"
+  node2: "joint_hidden1"
+  param {
+    name: "weight"
+    initialization: PRETRAINED
+    pretrained_model: "/home/bioinformatics/Documents/data/RNAbP/cv5/dbn_models/joint_rbm_LAST"
+  }
+}
+
+edge {
+  node1: "joint_hidden1"
+  node2: "joint_hidden2"
+  param {
+    name: "weight"
+    initialization: PRETRAINED
+    pretrained_model: "/home/bioinformatics/Documents/data/RNAbP/cv5/dbn_models/joint_rbm2_LAST"
+  }
+}
+
+edge {
+  node1: "joint_hidden2"
+  node2: "output_layer"
+  param {
+    name: "weight"
+    initialization: DENSE_GAUSSIAN_SQRT_FAN_IN
+    sigma: 0.01
+  }
+}
+
+edge {
+  node1: "RNA3seq_input_layer"
+  node2: "joint_hidden1"
+  param {
+    name: "weight"
+    initialization: PRETRAINED
+    pretrained_model: "/home/bioinformatics/Documents/data/RNAbP/cv5/dbn_models/joint_rbm_LAST"
+  }
+}
+
+hyperparams {
+  base_epsilon: 0.1
+  epsilon_decay: INVERSE_T
+  epsilon_decay_half_life: 5000
+  initial_momentum: 0.5
+  final_momentum: 0.9
+  momentum_change_steps: 5000
+  dropout: true
+  dropout_prob: 0.5
+  apply_weight_norm: false
+  weight_norm: 3.0
+  apply_l2_decay: false
+  l2_decay: 0.001
+  activation: LOGISTIC
+  adapt: NO_ADAPT
+  select_model_using_map: true
+}
